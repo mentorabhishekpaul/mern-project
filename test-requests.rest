@@ -1,0 +1,55 @@
+
+### - Register New User
+POST http://localhost:8080/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "name":"Bhanu Pratap",
+    "email":"bhanu@mail.com",
+    "password":"bhanu@123",
+    "phone":8976543210,
+    "address":"Faridabad, Haryana"
+}
+
+### - Login Existing User
+POST http://localhost:8080/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email":"ajay@mail.com",
+    "password":"ajay@123"
+}
+
+### - test controller
+GET http://localhost:8080/api/v1/auth/test
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGEyZGExNWI4NDg2OTEyZTc0NjU1MTMiLCJpYXQiOjE3NTU1NDIzNjgsImV4cCI6MTc1NjE0NzE2OH0.bOCUfFEYwne2xmwaxTEq7hi-_fHplUzkyNZbXqiAUm8
+
+
+### - test category creation when admin is logged in
+POST http://localhost:8080/api/v1/category/create-category
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGE0MWY4OGRjODhkMTlkYzE2MmUyZjQiLCJpYXQiOjE3NTU3NjQ1ODUsImV4cCI6MTc1NjM2OTM4NX0.27KHXgKxP5OyzKMJEIY5nsBMPPzx4zavSbywpj6HbKo
+Content-Type: application/json
+
+{
+    "name": "Kids Collection"
+}
+
+
+### - test category updation when admin is logged in
+PUT http://localhost:8080/api/v1/category/update-category/68a4b375fd6f70b1278ad138
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGE0MWY4OGRjODhkMTlkYzE2MmUyZjQiLCJpYXQiOjE3NTU3NjQ1ODUsImV4cCI6MTc1NjM2OTM4NX0.27KHXgKxP5OyzKMJEIY5nsBMPPzx4zavSbywpj6HbKo
+Content-Type: application/json
+
+{
+    "name": "Men Aperal Collection"
+}
+
+### - test to display all categories
+GET http://localhost:8080/api/v1/category/get-category
+
+### - test to find one category
+GET http://localhost:8080/api/v1/category/single-category/women-collection
+
+### - test to find one category
+DELETE http://localhost:8080/api/v1/category/delete-category/68a4b35efd6f70b1278ad134
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OGE0MWY4OGRjODhkMTlkYzE2MmUyZjQiLCJpYXQiOjE3NTU2MjIzMzcsImV4cCI6MTc1NjIyNzEzN30.nLivNQffrK0q-fDheldmPJNlD1zHZ-pk_2kpIA1Gq0k

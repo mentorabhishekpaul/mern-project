@@ -1,0 +1,3154 @@
+File Location: ./client/index.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>eCommerce Site</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+
+
+File Location: ./client/src/components/Form/CategoryForm.js
+import React from "react";
+
+const CategoryForm = ({ handleSubmit, value, setValue }) => {
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3 mt-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter New Category"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary">
+          Submit
+        </button>
+      </form>
+    </>
+  );
+};
+
+export default CategoryForm;
+
+
+File Location: ./client/src/components/Layout/AdminMenu.js
+import React from "react";
+import { NavLink } from "react-router-dom";
+
+const AdminMenu = () => {
+  return (
+    <>
+      <div className="list-group">
+        <h1>Admin Panel</h1>
+        <NavLink
+          to="/dashboard/admin/create-category"
+          className="list-group-item list-group-item-action isActive"
+          aria-current="true"
+        >
+          Create Category
+        </NavLink>
+        <NavLink
+          to="/dashboard/admin/create-product"
+          className="list-group-item list-group-item-action"
+        >
+          Create Products
+        </NavLink>
+        <NavLink
+          to="/dashboard/admin/products"
+          className="list-group-item list-group-item-action"
+        >
+          Products
+        </NavLink>
+        <NavLink
+          to="/dashboard/admin/users"
+          className="list-group-item list-group-item-action"
+        >
+          Users
+        </NavLink>
+      </div>
+    </>
+  );
+};
+
+export default AdminMenu;
+
+
+File Location: ./client/src/components/Layout/Footer.js
+import React from "react";
+import { Link } from "react-router-dom";
+
+const Footer = () => {
+  return (
+    <div className="bg-dark text-white p-3">
+      <h4 className="text-center">All Rights Reserved &copy;Abhishek Paul</h4>
+      <p className="text-center text-white mt-3">
+        <Link to="/about" style={{ color: "white" }}>
+          About Us
+        </Link>{" "}
+        |{" "}
+        <Link to="/contact" style={{ color: "white" }}>
+          Contact Us
+        </Link>
+      </p>
+    </div>
+  );
+};
+
+export default Footer;
+
+File Location: ./client/src/components/Layout/Header.js
+import React from "react";
+import { NavLink, Link } from "react-router-dom";
+import { useAuth } from "../../context/auth.js";
+import { toast } from "react-hot-toast";
+import { useCategory } from "../../hooks/useCategory.js";
+import { useCart } from "../../context/cart.js";
+
+const Header = () => {
+  const [auth, setAuth] = useAuth();
+  const [cart] = useCart();
+  const categories = useCategory();
+
+  const handleLogout = (e) => {
+    setAuth({
+      ...auth,
+      user: null,
+      token: "",
+    });
+    localStorage.removeItem("auth");
+    toast.success("Logout Successfully");
+  };
+  return (
+    <>
+      <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div className="container-fluid">
+          <NavLink to="/" className="navbar-brand">
+            eCommerce Site
+          </NavLink>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mynavbar"
+          >
+            <span className="navbar-toggler-icon" />
+          </button>
+          <div className="collapse navbar-collapse" id="mynavbar">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <NavLink to="/" className="nav-link">
+                  Home
+                </NavLink>
+              </li>
+              <li className="nav-item dropdown">
+                <Link
+                  className="nav-link dropdown-toggle"
+                  to={"/categories"}
+                  role="button"
+                  data-bs-toggle="dropdown"
+                >
+                  Categories
+                </Link>
+                <ul className="dropdown-menu">
+                  {categories?.map((c) => (
+                    <li key={c._id}>
+                      <Link
+                        className="dropdown-item"
+                        to={`/category/${c.slug}`}
+                      >
+                        {c.name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/cart" className="nav-link">
+                  Cart{" "}
+                  <span className="badge text-bg-danger">{cart?.length} </span>
+                </NavLink>
+              </li>
+              {!auth.user ? (
+                <>
+                  <li className="nav-item">
+                    <NavLink to="/register" className="nav-link">
+                      Signup
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink to="/login" className="nav-link">
+                      Login
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="nav-item dropdown">
+                    <NavLink
+                      className="nav-link dropdown-toggle"
+                      to="#"
+                      role="button"
+                      data-bs-toggle="dropdown"
+                    >
+                      Welcome, {auth?.user?.name}
+                    </NavLink>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <NavLink
+                          className="dropdown-item"
+                          to={`/dashboard/${
+                            auth?.user?.role === 1 ? "admin" : "user"
+                          }`}
+                        >
+                          Dashboard
+                        </NavLink>
+                      </li>
+                      <li>
+                        <NavLink
+                          onClick={handleLogout}
+                          to="/"
+                          className="dropdown-item"
+                        >
+                          Logout
+                        </NavLink>
+                      </li>
+                    </ul>
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </>
+  );
+};
+
+export default Header;
+
+File Location: ./client/src/components/Layout/Layout.js
+import React from "react";
+import Header from "./Header";
+import Footer from "./Footer";
+import { Helmet } from "react-helmet";
+
+const Layout = ({ children, title }) => {
+  return (
+    <div>
+      <Helmet>
+        <title>{title}</title>
+      </Helmet>
+      <Header />
+      <main style={{ minHeight: "81vh" }}>{children}</main>
+      <Footer />
+    </div>
+  );
+};
+
+export default Layout;
+
+
+File Location: ./client/src/components/Layout/UserMenu.js
+import React from "react";
+import { NavLink } from "react-router-dom";
+
+const UserMenu = () => {
+  return (
+    <>
+      <div class="list-group">
+        <h1>Dashboard</h1>
+        <NavLink
+          to="/dashboard/user/profile"
+          class="list-group-item list-group-item-action active"
+          aria-current="true"
+        >
+          Profile
+        </NavLink>
+        <NavLink
+          to="/dashboard/user/orders"
+          class="list-group-item list-group-item-action"
+        >
+          Orders
+        </NavLink>
+      </div>
+    </>
+  );
+};
+
+export default UserMenu;
+
+
+File Location: ./client/src/components/Routes/AdminRoute.js
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/auth";
+import { Outlet } from "react-router-dom";
+import axios from "axios";
+import Spinner from "../Spinner";
+
+export default function AdminRoute() {
+  const [ok, setOk] = useState(false);
+  const [auth, setAuth] = useAuth();
+
+  useEffect(() => {
+    const authCheck = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/auth/admin-auth`
+      );
+      if (res.data.ok) {
+        setOk(true);
+      } else {
+        setOk(false);
+      }
+    };
+    if (auth?.token) authCheck();
+  }, [auth?.token]);
+
+  return ok ? <Outlet /> : <Spinner path="" />;
+}
+
+
+File Location: ./client/src/components/Routes/PrivateRoute.js
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/auth";
+import { Outlet } from "react-router-dom";
+import axios from "axios";
+import Spinner from "../Spinner";
+
+export default function PrivateRoute() {
+  const [ok, setOk] = useState(false);
+  const [auth, setAuth] = useAuth();
+
+  useEffect(() => {
+    const authCheck = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/auth/user-auth`
+      );
+      if (res.data.ok) {
+        setOk(true);
+      } else {
+        setOk(false);
+      }
+    };
+    if (auth?.token) authCheck();
+  }, [auth?.token]);
+
+  return ok ? <Outlet /> : <Spinner />;
+}
+
+
+File Location: ./client/src/components/Prices.js
+export const Prices = [
+  {
+    _id: 0,
+    name: "$0 to $499",
+    array: [0, 500],
+  },
+  {
+    _id: 1,
+    name: "$499 to $999",
+    array: [499, 999],
+  },
+  {
+    _id: 2,
+    name: "$1000 to $1499",
+    array: [1000, 1499],
+  },
+  {
+    _id: 3,
+    name: "$1500 to $1999",
+    array: [499, 999],
+  },
+  {
+    _id: 4,
+    name: "$2000 to higher",
+    array: [2000, 9999],
+  },
+];
+
+
+File Location: ./client/src/components/Spinner.js
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const Spinner = ({ path = "login" }) => {
+  const [count, setCount] = useState(3);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount((prevValue) => prevValue - 1);
+    }, 1000);
+    if (count === 0)
+      navigate(`/${path}`, {
+        state: location.pathname,
+      });
+    return () => clearInterval(interval);
+  }, [count, navigate, location, path]);
+  return (
+    <>
+      <div
+        className="d-flex flex-column justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <h1 className="text-center">Redirecting you in {count} seconds</h1>
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Spinner;
+
+
+File Location: ./client/src/context/auth.js
+import axios from "axios";
+import { useState, useEffect, useContext, createContext } from "react";
+
+const AuthContext = createContext();
+
+const AuthProvider = ({ children }) => {
+  const [auth, setAuth] = useState({
+    user: null,
+    token: "",
+  });
+
+  axios.defaults.headers.common["Authorization"] = auth?.token;
+
+  useEffect(() => {
+    const data = localStorage.getItem("auth");
+    if (data) {
+      const parseData = JSON.parse(data);
+      setAuth({
+        ...auth,
+        user: parseData.user,
+        token: parseData.token,
+      });
+    }
+  }, []);
+  return (
+    <AuthContext.Provider value={[auth, setAuth]}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+const useAuth = () => useContext(AuthContext);
+
+export { useAuth, AuthProvider };
+
+
+File Location: ./client/src/context/cart.js
+import { useState, useContext, createContext, useEffect } from "react";
+
+const CartContext = createContext();
+const CartProvider = ({ children }) => {
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    let existingCartItem = localStorage.getItem("cart");
+    if (existingCartItem) setCart(JSON.parse(existingCartItem));
+  }, []);
+
+  return (
+    <CartContext.Provider value={[cart, setCart]}>
+      {children}
+    </CartContext.Provider>
+  );
+};
+
+const useCart = () => useContext(CartContext);
+
+export { useCart, CartProvider };
+
+
+File Location: ./client/src/hooks/useCategory.js
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+export function useCategory() {
+  const [categories, setCategories] = useState([]);
+
+  const getCategories = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
+      );
+      setCategories(data?.category);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  return categories;
+}
+
+
+File Location: ./client/src/Pages/Admin/AdminDashboard.js
+import React from "react";
+import Layout from "../../components/Layout/Layout.js";
+import AdminMenu from "../../components/Layout/AdminMenu.js";
+import { useAuth } from "../../context/auth.js";
+
+const AdminDashboard = () => {
+  const [auth] = useAuth();
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <div className="card m-3 p-3">
+              <h4>
+                <b>Name:</b> {auth?.user?.name}
+              </h4>
+              <h4>
+                <b>Email:</b> {auth?.user?.email}
+              </h4>
+              <h4>
+                <b>Contact:</b> {auth?.user?.phone}
+              </h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default AdminDashboard;
+
+
+File Location: ./client/src/Pages/Admin/CreateCategory.js
+import React, { useState, useEffect } from "react";
+import Layout from "../../components/Layout/Layout";
+import AdminMenu from "../../components/Layout/AdminMenu";
+import toast from "react-hot-toast";
+import axios from "axios";
+import CategoryForm from "../../components/Form/CategoryForm";
+import { Modal } from "antd";
+
+const CreateCategory = () => {
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [updatedName, setUpdatedName] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/category/create-category`,
+        { name }
+      );
+      if (data?.success) {
+        toast.success(`${name} is created`);
+        setName("");
+        getAllCategory();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong with Input form");
+    }
+  };
+
+  const getAllCategory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
+      );
+      if (data.success) {
+        setCategories(data.category);
+        // toast.success(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong in getting categories");
+    }
+  };
+
+  useEffect(() => {
+    getAllCategory();
+  }, []);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_API}/api/v1/category/update-category/${selected._id}`,
+        { name: updatedName }
+      );
+      if (data.success) {
+        toast.success(`${updatedName} is updated`);
+        setSelected(null);
+        setUpdatedName("");
+        setVisible(false);
+        getAllCategory();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const handleDelete = async (pId) => {
+    try {
+      const { data } = await axios.delete(
+        `${process.env.REACT_APP_API}/api/v1/category/delete-category/${pId}`
+      );
+      if (data.success) {
+        toast.success(`Category is Deleted`);
+        getAllCategory();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <h1>Manage Category</h1>
+            <div className="p-3">
+              <CategoryForm
+                handleSubmit={handleSubmit}
+                value={name}
+                setValue={setName}
+              />
+            </div>
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories?.map((c) => (
+                  <tr key={c._id}>
+                    <td>{c.name}</td>
+                    <td>
+                      <button
+                        className="btn btn-primary ms-2"
+                        onClick={() => {
+                          setVisible(true);
+                          setUpdatedName(c.name);
+                          setSelected(c);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger ms-2"
+                        onClick={() => handleDelete(c._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <Modal
+            onCancel={() => setVisible(false)}
+            footer={null}
+            visible={visible}
+          >
+            <CategoryForm
+              value={updatedName}
+              setValue={setUpdatedName}
+              handleSubmit={handleUpdate}
+            />
+          </Modal>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default CreateCategory;
+
+
+File Location: ./client/src/Pages/Admin/CreateProduct.js
+import React, { useState, useEffect } from "react";
+import Layout from "../../components/Layout/Layout";
+import AdminMenu from "../../components/Layout/AdminMenu";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Select } from "antd";
+import { useNavigate } from "react-router-dom";
+
+const { Option } = Select;
+
+const CreateProduct = () => {
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [shipping, setShipping] = useState("");
+  const [photo, setPhoto] = useState("");
+  const navigate = useNavigate();
+
+  const getAllCategory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
+      );
+      if (data?.success) {
+        setCategories(data?.category);
+        // toast.success(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong in getting categories");
+    }
+  };
+
+  useEffect(() => {
+    getAllCategory();
+  }, []);
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    try {
+      const productData = new FormData();
+      productData.append("name", name);
+      productData.append("description", description);
+      productData.append("category", category);
+      productData.append("price", price);
+      productData.append("quantity", quantity);
+      productData.append("photo", photo);
+      productData.append("shipping", shipping);
+
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/product/create-product`,
+        productData
+      );
+      if (data?.success) {
+        toast.success("Product Created Successfully");
+        navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
+  };
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <h1>Create Product</h1>
+            <Select
+              bordered={false}
+              placeholder="Select a Category"
+              size="large"
+              showSearch
+              className="form-select mb-3"
+              onChange={(value) => {
+                setCategory(value);
+              }}
+            >
+              {categories.map((c) => (
+                <Option key={c._id} value={c._id}>
+                  {c.name}
+                </Option>
+              ))}
+            </Select>
+            <div className="mb-3">
+              <label className="btn btn-outline-secondary col-md-12">
+                {photo ? photo.name : "Upload Photo"}
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => setPhoto(e.target.files[0])}
+                  hidden
+                />
+              </label>
+            </div>
+            <div className="mb-3">
+              {photo && (
+                <div className="text-center">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="product_photo"
+                    height={"200px"}
+                    className="img img-responsive"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="mb-3">
+              <input
+                type="text"
+                placeholder="Product Name"
+                className="form-control"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <textarea
+                placeholder="Product Description"
+                className="form-control"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </div>
+            <div className="mb-3">
+              <input
+                type="number"
+                placeholder="Product Price"
+                className="form-control"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                type="number"
+                placeholder="Product Quantity"
+                className="form-control"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <Select
+                bordered={false}
+                placeholder="Select Shipping "
+                size="large"
+                showSearch
+                className="form-select mb-3"
+                onChange={(value) => {
+                  setShipping(value);
+                }}
+              >
+                <Option value="0">No</Option>
+                <Option value="1">Yes</Option>
+              </Select>
+            </div>
+            <div className="mb-3">
+              <button className="btn btn-primary" onClick={handleCreate}>
+                CREATE PRODUCT
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default CreateProduct;
+
+
+File Location: ./client/src/Pages/Admin/Products.js
+import React, { useState, useEffect } from "react";
+import AdminMenu from "../../components/Layout/AdminMenu";
+import Layout from "../../components/Layout/Layout";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+
+const Products = () => {
+  const [products, setProducts] = useState([]);
+
+  const getAllProducts = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/get-products`
+      );
+      setProducts(data.products);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
+  };
+
+  useEffect(() => {
+    getAllProducts();
+  }, []);
+
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <h1 className="text-center">Our Products</h1>
+
+            <div className="row">
+              {products.map((p) => (
+                <div className="card" style={{ width: 300 }} key={p._id}>
+                  <img
+                    className="card-img-top"
+                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                    alt={p.name}
+                  />
+                  <div className="card-body">
+                    <Link
+                      to={`/dashboard/admin/products/${p.slug}`}
+                      style={{ textDecoration: "none", color: "black" }}
+                    >
+                      <h4 className="card-title">{p.name}</h4>
+                    </Link>
+                    <p className="card-text">
+                      <b>Description: </b>
+                      {p.description}
+                    </p>
+                    <p className="card-text">
+                      <b>Price: </b>
+                      {p.price}
+                    </p>
+                    <p className="card-text">
+                      <b>Stock: </b>
+                      {p.quantity}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Products;
+
+
+File Location: ./client/src/Pages/Admin/UpdateProduct.js
+import { useState, useEffect } from "react";
+import Layout from "../../components/Layout/Layout";
+import AdminMenu from "../../components/Layout/AdminMenu";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Select } from "antd";
+import { useNavigate, useParams } from "react-router-dom";
+
+const { Option } = Select;
+
+const UpdateProduct = () => {
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [shipping, setShipping] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [id, setId] = useState("");
+
+  const navigate = useNavigate();
+  const params = useParams();
+
+  const getSingleProduct = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/get-product/${params.slug}`
+      );
+      setCategory(data.product.category._id);
+      setName(data.product.name);
+      setId(data.product._id);
+      setDescription(data.product.description);
+      setPrice(data.product.price);
+      setQuantity(data.product.quantity);
+      setShipping(data.product.shipping);
+      setPhoto(data.product.photo);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getSingleProduct();
+    // eslint-disable-next-line
+  }, []);
+
+  const getAllCategory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
+      );
+      if (data?.success) {
+        setCategories(data?.category);
+        // toast.success(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong in getting categories");
+    }
+  };
+
+  useEffect(() => {
+    getAllCategory();
+  }, []);
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const productData = new FormData();
+      productData.append("name", name);
+      productData.append("description", description);
+      productData.append("category", category);
+      productData.append("price", price);
+      productData.append("quantity", quantity);
+      photo && productData.append("photo", photo);
+      productData.append("shipping", shipping);
+
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_API}/api/v1/product/update-product/${id}`,
+        productData
+      );
+      if (data?.success) {
+        toast.success("Product Updated Successfully");
+        navigate("/dashboard/admin/products");
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      let answer = window.prompt("Are you sure to delete this product?");
+      if (!answer) return;
+      const { data } = await axios.delete(
+        `${process.env.REACT_APP_API}/api/v1/product/delete-product/${id}`
+      );
+      toast.success("Product Deleted Successfully");
+      navigate("/dashboard/admin/products");
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
+
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <h1>Update Product</h1>
+            <Select
+              bordered={false}
+              placeholder="Select a Category"
+              size="large"
+              showSearch
+              className="form-select mb-3"
+              value={category}
+              onChange={(value) => {
+                setCategory(value);
+              }}
+            >
+              {categories.map((c) => (
+                <Option key={c._id} value={c._id}>
+                  {c.name}
+                </Option>
+              ))}
+            </Select>
+            <div className="mb-3">
+              <label className="btn btn-outline-secondary col-md-12">
+                {photo ? photo.name : "Upload Photo"}
+                <input
+                  type="file"
+                  name="photo"
+                  accept="image/*"
+                  onChange={(e) => setPhoto(e.target.files[0])}
+                  hidden
+                />
+              </label>
+            </div>
+            <div className="mb-3">
+              {photo ? (
+                <div className="text-center">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="product_photo"
+                    height={"200px"}
+                    className="img img-responsive"
+                  />
+                </div>
+              ) : (
+                <div className="text-center">
+                  <img
+                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${id}`}
+                    alt="product_photo"
+                    height={"200px"}
+                    className="img img-responsive"
+                  />
+                </div>
+              )}
+            </div>
+            <div className="mb-3">
+              <input
+                type="text"
+                placeholder="Product Name"
+                className="form-control"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <textarea
+                placeholder="Product Description"
+                className="form-control"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </div>
+            <div className="mb-3">
+              <input
+                type="number"
+                placeholder="Product Price"
+                className="form-control"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                type="number"
+                placeholder="Product Quantity"
+                className="form-control"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+              />
+            </div>
+            <div className="mb-3">
+              <Select
+                bordered={false}
+                placeholder="Select Shipping "
+                size="large"
+                showSearch
+                className="form-select mb-3"
+                value={shipping ? "Yes" : "No"}
+                onChange={(value) => {
+                  setShipping(value);
+                }}
+              >
+                <Option value="0">No</Option>
+                <Option value="1">Yes</Option>
+              </Select>
+            </div>
+            <div className="row">
+              <div className="mb-1 col-sm-3">
+                <button className="btn btn-primary" onClick={handleUpdate}>
+                  UPDATE PRODUCT
+                </button>
+              </div>
+              <div className="mb-1 col-sm-3">
+                <button className="btn btn-danger" onClick={handleDelete}>
+                  DELETE PRODUCT
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default UpdateProduct;
+
+
+File Location: ./client/src/Pages/Admin/Users.js
+import React from "react";
+import Layout from "../../components/Layout/Layout";
+import AdminMenu from "../../components/Layout/AdminMenu";
+
+const Users = () => {
+  return (
+    <Layout>
+      <div className="container m-3 p-3">
+        <div className="row">
+          <div className="col-sm-3">
+            <AdminMenu />
+          </div>
+          <div className="col-sm-9">
+            <h1>All Users</h1>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default Users;
+
+
+File Location: ./client/src/Pages/Auth/ForgotPasswordPage.js
+import React, { useState } from "react";
+import Layout from "../../components/Layout/Layout";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const ForgotPasswordPage = () => {
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [answer, setAnswer] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/auth/forgot-password`,
+        { email, newPassword, answer }
+      );
+      if (response && response.data.success) {
+        toast.success(response.data && response.data.message);
+
+        navigate("/login");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong!!!");
+    }
+  };
+  return (
+    <Layout title={"Verify yourself if you forgot password"}>
+      <form className="p-3 bg-light m-3" onSubmit={handleSubmit}>
+        <div className="mb-3 mt-3">
+          <label htmlFor="email" className="form-label">
+            <b>Email:</b>
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="Enter Email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="answer" className="form-label">
+            <b>Secret Answer:</b>
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="answer"
+            placeholder="Enter Your Mother's maiden Name"
+            name="answer"
+            required
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="new-password" className="form-label">
+            <b>New Password:</b>
+          </label>
+          <input
+            type="new-password"
+            className="form-control"
+            id="new-password"
+            placeholder="Enter New Password"
+            name="new-password"
+            required
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Reset Password
+        </button>
+      </form>
+    </Layout>
+  );
+};
+
+export default ForgotPasswordPage;
+
+
+File Location: ./client/src/Pages/Auth/LoginPage.js
+import React, { useState } from "react";
+import Layout from "../../components/Layout/Layout";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useNavigate, useLocation, NavLink } from "react-router-dom";
+import { useAuth } from "../../context/auth";
+
+const LoginPage = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [auth, setAuth] = useAuth();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/auth/login`,
+        { email, password }
+      );
+      if (response && response.data.success) {
+        toast.success(response.data && response.data.message);
+        setAuth({
+          ...auth,
+          user: response.data.user,
+          token: response.data.token,
+        });
+        localStorage.setItem("auth", JSON.stringify(response.data));
+        navigate(location.state || "/");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong!!!");
+    }
+  };
+
+  return (
+    <Layout title={"Register Yourself to Buy Products"}>
+      <form className="p-3 bg-light m-3" onSubmit={handleSubmit}>
+        <div className="mb-3 mt-3">
+          <label htmlFor="email" className="form-label">
+            <b>Email:</b>
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="Enter Email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="password" className="form-label">
+            <b>Password:</b>
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            placeholder="Enter Password"
+            name="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary">
+          Login
+        </button>
+        <div className="mt-3 mb-3">
+          <NavLink to="/forgot-password">Forgot Password?</NavLink>
+        </div>
+      </form>
+    </Layout>
+  );
+};
+
+export default LoginPage;
+
+
+File Location: ./client/src/Pages/Auth/RegisterPage.js
+import React, { useState } from "react";
+import Layout from "../../components/Layout/Layout";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const RegisterPage = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [answer, setAnswer] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/auth/register`,
+        { name, email, password, phone, address, answer }
+      );
+      if (response && response.data.success) {
+        toast.success(response.data && response.data.message);
+        navigate("/login");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went Wrong!!!");
+    }
+  };
+
+  return (
+    <Layout title={"Register Yourself to Buy Products"}>
+      <form className="p-3 bg-light m-3" onSubmit={handleSubmit}>
+        <div className="mb-3 mt-3">
+          <label htmlFor="name" className="form-label">
+            <b>Full Name:</b>
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="name"
+            placeholder="Enter Your Full Name"
+            name="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="email" className="form-label">
+            <b>Email:</b>
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            placeholder="Enter Email"
+            name="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="password" className="form-label">
+            <b>Password:</b>
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            placeholder="Enter Password"
+            name="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="mb-3 mt-3">
+          <label htmlFor="phone" className="form-label">
+            <b>Phone Number:</b>
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="phone"
+            placeholder="Enter Phone Number"
+            name="phone"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="address" className="form-label">
+            <b>Address:</b>
+          </label>
+          <textarea
+            className="form-control"
+            id="address"
+            placeholder="Enter Your Address"
+            name="address"
+            required
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          ></textarea>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="address" className="form-label">
+            <b>Security Answer:</b>
+          </label>
+          <textarea
+            className="form-control"
+            id="answer"
+            placeholder="What is your mother's maiden name?"
+            name="answer"
+            required
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+          ></textarea>
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Register
+        </button>
+      </form>
+    </Layout>
+  );
+};
+
+export default RegisterPage;
+
+
+File Location: ./client/src/Pages/AboutUsPage.js
+import React from "react";
+import Layout from "../components/Layout/Layout";
+
+const AboutUsPage = () => {
+  return (
+    <Layout title={"About Us - Know more about eCommerce Site"}>
+      <div className="container my-5">
+        <div className="text-center mb-5">
+          <h1 className="fw-bold">About Us</h1>
+          <p className="lead">
+            We make great products easy to find and deliver delight to your
+            doorstep.
+          </p>
+        </div>
+        {/* Mission and Values */}
+        <div className="row g-4">
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title">Our Mission</h3>
+                <p className="card-text">
+                  Since 2020, YourShop has connected shoppers with quality
+                  products at fair prices. We aim to provide fast shipping,
+                  secure payments, and friendly customer service.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title">Our Values</h3>
+                <ul>
+                  <li>Customer-first approach</li>
+                  <li>Transparent pricing</li>
+                  <li>Sustainable packaging</li>
+                  <li>Quality without compromise</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Stats */}
+        <div className="row g-4 mt-4">
+          <div className="col-md-4">
+            <div className="card h-100 text-center shadow-sm">
+              <div className="card-body">
+                <h4 className="fw-bold">1M+</h4>
+                <p>Orders Delivered</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 text-center shadow-sm">
+              <div className="card-body">
+                <h4 className="fw-bold">4.8/5</h4>
+                <p>Customer Rating</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="card h-100 text-center shadow-sm">
+              <div className="card-body">
+                <h4 className="fw-bold">72h</h4>
+                <p>Avg. Delivery Time</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Contact Info */}
+        <div className="row g-4 mt-4">
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h3>Contact Us</h3>
+                <p>
+                  Email:{" "}
+                  <a href="mailto:support@yourshop.com">support@yourshop.com</a>
+                </p>
+                <p>Phone: +91-98765-43210</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body">
+                <h3>Secure &amp; Reliable</h3>
+                <p>
+                  We provide SSL-encrypted payments, PCI-DSS compliance, and COD
+                  in select cities.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default AboutUsPage;
+
+
+File Location: ./client/src/Pages/CartPage.js
+import React from "react";
+import Layout from "../components/Layout/Layout";
+import { useCart } from "../context/cart";
+import { useAuth } from "../context/auth";
+import { useNavigate } from "react-router-dom";
+
+const CartPage = () => {
+  const [cart, setCart] = useCart();
+  const [auth, setAuth] = useAuth();
+  const navigate = useNavigate();
+
+  const totalPrice = () => {
+    try {
+      let total = 0;
+      cart?.map((item) => {
+        total += item.price;
+      });
+      return total.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const removeCartItem = (pid) => {
+    try {
+      let myCart = [...cart];
+      let index = myCart.findIndex((item) => item._id === pid);
+      myCart.splice(index, 1);
+      setCart(myCart);
+      localStorage.setItem("cart", JSON.stringify(myCart));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  return (
+    <Layout>
+      <div className="container">
+        <div className="row">
+          <div className="col-sm-12">
+            <h1>Hello {`${auth?.token && auth?.user?.name}`},</h1>
+            <h4>
+              {cart?.length > 0
+                ? auth?.token
+                  ? `You have ${cart?.length} item(s) in your cart`
+                  : `You have ${cart?.length} item(s) in your cart. Please Login to Checkout`
+                : "Your Cart is Empty"}
+            </h4>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-sm-8 card">
+            {cart?.map((p) => (
+              <div className="row">
+                <div className="col-sm-2">
+                  <img
+                    src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                    className="card-img-top"
+                    alt={p.name}
+                  />
+                </div>
+                <div className="col-sm-6">
+                  <h5 className="card-title">{p.name}</h5>
+                  <p className="card-text">{p.description}</p>
+                  <p className="card-text">
+                    <b>${p.price}</b>
+                  </p>
+                  <button
+                    className="btn btn-danger ms-1"
+                    onClick={() => removeCartItem(p._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="col-sm-4 text-center">
+            <h2>Cart Summary</h2>
+            <p>Total | Checkout | Payment</p>
+            <hr />
+            <h4>Total: {totalPrice()}</h4>
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default CartPage;
+
+
+File Location: ./client/src/Pages/CategoryProduct.js
+import React, { useState, useEffect } from "react";
+import Layout from "../components/Layout/Layout";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
+const CategoryProduct = () => {
+  const [products, setProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const params = useParams();
+  const getProductByCategory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/product-category/${params.slug}`
+      );
+      setProducts(data?.products);
+      setCategory(data?.category);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (params?.slug) getProductByCategory();
+  }, [params?.slug]);
+  return (
+    <Layout>
+      <div className="container">
+        <div className="row">
+          <h3>Category - {category?.name}</h3>
+          <h4>{products?.length} result(s) found</h4>
+          <div className="d-flex flex-wrap">
+            {products?.map((p) => (
+              <div className="card m-2" style={{ width: "18rem" }} key={p._id}>
+                <img
+                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                  className="card-img-top"
+                  alt={p.name}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{p.name}</h5>
+                  <p className="card-text">
+                    {p.description.substring(0, 30)}...
+                  </p>
+                  <p className="card-text">
+                    <b>${p.price}</b>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default CategoryProduct;
+
+
+File Location: ./client/src/Pages/ContactUsPage.js
+import React from "react";
+import Layout from "../components/Layout/Layout";
+
+const ContactUsPage = () => {
+  return (
+    <Layout title={"Contact Us Now!!!"}>
+      <section className="container my-5">
+        <div className="row">
+          <div className="col-md-6">
+            <h2>Contact Us</h2>
+            <p>
+              We’d love to hear from you! Reach out to us with your queries or
+              feedback.
+            </p>
+            <ul className="list-unstyled">
+              <li>
+                <strong>Email:</strong> abhishekpaul.24@gmail.com
+              </li>
+              <li>
+                <strong>Phone:</strong> +91 89204 00096
+              </li>
+              <li>
+                <strong>Address:</strong> Block F, New Industrial Township 2,
+                Faridabad, India
+              </li>
+            </ul>
+          </div>
+          <div className="col-md-6">
+            <h2>Send a Message</h2>
+            <form>
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  placeholder="Enter your name"
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="email" className="form-label">
+                  Your Email
+                </label>
+                <input
+                  type="email"
+                  className="form-control"
+                  id="email"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="message" className="form-label">
+                  Message
+                </label>
+                <textarea
+                  className="form-control"
+                  id="message"
+                  rows={4}
+                  placeholder="Write your message"
+                  defaultValue={""}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary">
+                Send
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+};
+
+export default ContactUsPage;
+
+
+File Location: ./client/src/Pages/HomePage.js
+import React, { useState, useEffect } from "react";
+import Layout from "../components/Layout/Layout";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { Checkbox, Radio } from "antd";
+import { Prices } from "../components/Prices";
+import { useCart } from "../context/cart";
+
+const HomePage = () => {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [checked, setChecked] = useState([]);
+  const [radio, setRadio] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [cart, setCart] = useCart();
+
+  //get all cat
+  const getAllCategory = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/category/get-category`
+      );
+      if (data?.success) {
+        setCategories(data?.category);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllCategory();
+    getTotal();
+  }, []);
+  //get products
+  const getAllProducts = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/product-list/${page}`
+      );
+      setLoading(false);
+      setProducts(data.products);
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+  //getTOtal COunt
+  const getTotal = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/product-count`
+      );
+      setTotal(data?.total);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (page === 1) return;
+    loadMore();
+  }, [page]);
+  //load more
+  const loadMore = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/api/v1/product/product-list/${page}`
+      );
+      setLoading(false);
+      setProducts([...products, ...data?.products]);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  // filter by cat
+  const handleFilter = (value, id) => {
+    let all = [...checked];
+    if (value) {
+      all.push(id);
+    } else {
+      all = all.filter((c) => c !== id);
+    }
+    setChecked(all);
+  };
+  useEffect(() => {
+    if (!checked.length || !radio.length) getAllProducts();
+  }, [checked.length, radio.length]);
+
+  useEffect(() => {
+    if (checked.length || radio.length) filterProduct();
+  }, [checked, radio]);
+
+  //get filterd product
+  const filterProduct = async () => {
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_API}/api/v1/product/product-filters`,
+        {
+          checked,
+          radio,
+        }
+      );
+      setProducts(data?.products);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <Layout title={"Home Page - Our eCommerce Site"}>
+      <div className="row">
+        <div className="col-sm-2 p-3">
+          <h4 className="text-center">Filter Category</h4>
+          {categories?.map((c) => (
+            <Checkbox
+              key={c._id}
+              onChange={(e) => handleFilter(e.target.checked, c._id)}
+            >
+              {c.name}
+            </Checkbox>
+          ))}
+          <h4 className="text-center mt-4">Filter Price</h4>
+          <Radio.Group onChange={(e) => setRadio(e.target.value)}>
+            {Prices?.map((p) => (
+              <div key={p._id}>
+                <Radio value={p.array}>{p.name}</Radio>
+              </div>
+            ))}
+          </Radio.Group>
+          <button
+            className="btn btn-secondary mt-3"
+            style={{ width: "100%" }}
+            onClick={() => window.location.reload()}
+          >
+            Reset Filters
+          </button>
+        </div>
+        <div className="col-sm-10">
+          <h1 className="text-center">Our Products</h1>
+          <div className="d-flex flex-wrap">
+            {products?.map((p) => (
+              <div className="card m-2" style={{ width: "18rem" }} key={p._id}>
+                <img
+                  src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${p._id}`}
+                  className="card-img-top"
+                  alt={p.name}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{p.name}</h5>
+                  <p className="card-text">
+                    {p.description.substring(0, 30)}...
+                  </p>
+                  <p className="card-text">
+                    <b>${p.price}</b>
+                  </p>
+                  {/* <button className="btn btn-primary ms-1">More Info</button> */}
+                  <button
+                    className="btn btn-secondary ms-1"
+                    onClick={() => {
+                      setCart([...cart, p]);
+                      localStorage.setItem(
+                        "cart",
+                        JSON.stringify([...cart, p])
+                      );
+                      toast.success("Item Added to Cart");
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="m-2 p-3">
+            {products && products.length < total && (
+              <button
+                className="btn btn-warning"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setPage(page + 1);
+                }}
+              >
+                {loading ? "Loading ..." : "Loadmore"}
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+};
+
+export default HomePage;
+
+
+File Location: ./client/src/Pages/PageNotFound.js
+import React from "react";
+import Layout from "../components/Layout/Layout";
+import { NavLink } from "react-router-dom";
+
+const PageNotFound = () => {
+  return (
+    <Layout title={"Page you are looking for is not Found!!!"}>
+      <div className="container text-center flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+        <h1 className="display-1 fw-bold text-danger">404</h1>
+        <h2 className="mb-3">Oops! Page Not Found</h2>
+        <p className="lead mb-4">
+          The page you’re looking for doesn’t exist or has been moved.
+        </p>
+        <NavLink to="/" className="btn btn-primary btn-lg">
+          Go Back Home
+        </NavLink>
+      </div>
+    </Layout>
+  );
+};
+
+export default PageNotFound;
+
+
+File Location: ./client/src/index.js
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/auth.js";
+import "antd/dist/reset.css";
+import { CartProvider } from "./context/cart.js";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <AuthProvider>
+    <CartProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </CartProvider>
+  </AuthProvider>
+);
+
+reportWebVitals();
+
+
+File Location: ./client/src/App.js
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import AboutUsPage from "./pages/AboutUsPage";
+import ContactUsPage from "./pages/ContactUsPage";
+import PageNotFound from "./pages/PageNotFound";
+import RegisterPage from "./pages/Auth/RegisterPage";
+import LoginPage from "./pages/Auth/LoginPage";
+import { Toaster } from "react-hot-toast";
+import Dashboard from "./pages/user/Dashboard";
+import PrivateRoute from "./components/Routes/PrivateRoute";
+import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage";
+import AdminRoute from "./components/Routes/AdminRoute";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import CreateCategory from "./pages/Admin/CreateCategory";
+import CreateProduct from "./pages/Admin/CreateProduct";
+import Users from "./pages/Admin/Users";
+import Orders from "./pages/user/Orders";
+import Profile from "./pages/user/Profile";
+import Products from "./pages/Admin/Products";
+import UpdateProduct from "./pages/Admin/UpdateProduct";
+import CategoryProduct from "./pages/CategoryProduct";
+import CartPage from "./pages/CartPage";
+
+function App() {
+  return (
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutUsPage />} />
+        <Route path="/contact" element={<ContactUsPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/category/:slug" element={<CategoryProduct />} />
+
+        <Route path="/dashboard" element={<AdminRoute />}>
+          <Route path="admin" element={<AdminDashboard />} />
+          <Route path="admin/create-category" element={<CreateCategory />} />
+          <Route path="admin/create-product" element={<CreateProduct />} />
+          <Route path="admin/products/:slug" element={<UpdateProduct />} />
+          <Route path="admin/products" element={<Products />} />
+          <Route path="admin/users" element={<Users />} />
+        </Route>
+
+        <Route path="/dashboard" element={<PrivateRoute />}>
+          <Route path="user" element={<Dashboard />} />
+          <Route path="user/orders" element={<Orders />} />
+          <Route path="user/profile" element={<Profile />} />
+        </Route>
+
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;
+
+
+File Location: ./client/src/.env
+REACT_APP_API = http://localhost:8080
+
+File Location: ./client/src/package.json
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "antd": "^5.27.1",
+    "axios": "^1.11.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-helmet": "^6.1.0",
+    "react-hot-toast": "^2.6.0",
+    "react-router-dom": "^7.8.1",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+
+
+File Location: ./config/db.js
+import mongoose from "mongoose";
+import colors from "colors";
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URL);
+    console.log(
+      `Connected to MongoDB Database with ${conn.connection.host} at port number ${conn.connection.port}`
+        .bgMagenta.white
+    );
+  } catch (error) {
+    console.log(`Error in Connecting Database ${error}`.bgRed.white);
+  }
+};
+
+export default connectDB;
+
+
+File Location: ./controllers/authController.js
+import { comparePassword, hashPassword } from "../helpers/authHelper.js";
+import userModel from "../models/userModel.js";
+import JWT from "jsonwebtoken";
+
+export const registerController = async (req, res) => {
+  try {
+    const { name, email, password, phone, address, answer } = req.body;
+    if (!name) {
+      return res.send({ message: "Name is Required" });
+    }
+    if (!email) {
+      return res.send({ message: "Email is Required" });
+    }
+    if (!password) {
+      return res.send({ message: "Password is Required" });
+    }
+    if (!phone) {
+      return res.send({ message: "Phone is Required" });
+    }
+    if (!address) {
+      return res.send({ message: "Address is Required" });
+    }
+    if (!answer) {
+      return res.send({ message: "Secury Answer is Required" });
+    }
+
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return res.status(200).send({
+        success: false,
+        message: "Already Registered, please Login",
+      });
+    }
+
+    const hashedPassword = await hashPassword(password);
+    const newUser = await new userModel({
+      name,
+      email,
+      password,
+      phone,
+      address,
+      password: hashedPassword,
+      answer,
+    }).save();
+
+    res.status(201).send({
+      success: true,
+      message: "User Registered Successfully",
+      newUser,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in Registration",
+      error,
+    });
+  }
+};
+
+export const loginController = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(404).send({
+        success: false,
+        message: "Invalid Credentials",
+      });
+    }
+    const user = await userModel.findOne({ email });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "You are not Registered with this email",
+        user,
+      });
+    }
+    const match = await comparePassword(password, user.password);
+    if (!match) {
+      return res.status(200).send({
+        success: false,
+        message: "Invalid Password",
+      });
+    }
+
+    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.status(200).send({
+      success: true,
+      message: "Login Successfully",
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in Login",
+      error,
+    });
+  }
+};
+
+export const forgotPasswordController = async (req, res) => {
+  try {
+    const { email, answer, newPassword } = req.body;
+    if (!email) {
+      res.status(400).send({ message: "Email is Required" });
+    }
+    if (!answer) {
+      res.status(400).send({ message: "Answer is Required" });
+    }
+    if (!newPassword) {
+      res.status(400).send({ message: "New Password is Required" });
+    }
+
+    const user = await userModel.findOne({ email, answer });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "Wrong Email or Answer is Provided",
+      });
+    }
+    const hashed = await hashPassword(newPassword);
+    await userModel.findByIdAndUpdate(user._id, { password: hashed });
+    res.status(200).send({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Something went Wrong",
+      error,
+    });
+  }
+};
+
+
+File Location: ./controllers/categoryController.js
+import categoryModel from "../models/categoryModel.js";
+import slugify from "slugify";
+
+export const createCategoryController = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(401).send({ message: "Name is Required" });
+    }
+    const existingCategory = await categoryModel.findOne({ name });
+    if (existingCategory) {
+      return res.status(200).send({
+        success: false,
+        message: "Category Already Exists",
+      });
+    }
+    const category = await new categoryModel({
+      name,
+      slug: slugify(name),
+    }).save();
+    res.status(201).send({
+      success: true,
+      message: "New Category created successfully",
+      category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in creating Category",
+      error,
+    });
+  }
+};
+
+export const updateCategoryController = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const { id } = req.params;
+    const category = await categoryModel.findByIdAndUpdate(
+      id,
+      {
+        name,
+        slug: slugify(name),
+      },
+      { new: true }
+    );
+    res.status(200).send({
+      success: true,
+      message: "Category updated Successfully",
+      category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in updating category",
+      error,
+    });
+  }
+};
+
+export const categoryController = async (req, res) => {
+  try {
+    const category = await categoryModel.find({});
+    res.status(200).send({
+      success: true,
+      message: "Categories found",
+      category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in displaying categories",
+      error,
+    });
+  }
+};
+
+export const singleCategoryController = async (req, res) => {
+  try {
+    const category = await categoryModel.findOne({ slug: req.params.slug });
+    res.status(200).send({
+      success: true,
+      message: "Category found",
+      category,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Category does not Exist",
+      error,
+    });
+  }
+};
+
+export const deleteCategoryController = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await categoryModel.findByIdAndDelete(id);
+    res.status(200).send({
+      success: true,
+      message: "Categrory Deleted Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Unable to Delete Category",
+      error,
+    });
+  }
+};
+
+
+File Location: ./controllers/productController.js
+import slugify from "slugify";
+import productModel from "../models/productModel.js";
+import fs from "fs";
+import categoryModel from "../models/categoryModel.js";
+
+export const createProductController = async (req, res) => {
+  try {
+    const { name, slug, description, price, category, quantity, shipping } =
+      req.fields;
+    const { photo } = req.files;
+
+    switch (true) {
+      case !name:
+        return res.status(500).send({ error: "Name is Required" });
+      case !description:
+        return res.status(500).send({ error: "Description is Required" });
+      case !price:
+        return res.status(500).send({ error: "Price is Required" });
+      case !category:
+        return res.status(500).send({ error: "Category is Required" });
+      case !quantity:
+        return res.status(500).send({ error: "Quantity is Required" });
+      case photo && photo.size > 100000:
+        return res
+          .status(500)
+          .send({ error: "Photo is Required and should be less than 1 MB" });
+    }
+    const products = productModel({ ...req.fields, slug: slugify(name) });
+    if (photo) {
+      products.photo.data = fs.readFileSync(photo.path);
+      products.photo.contentType = photo.type;
+    }
+    await products.save();
+    res.status(201).send({
+      success: true,
+      message: "Product Created Successfully",
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Unable to Create Product",
+      error,
+    });
+  }
+};
+
+export const getProductsController = async (req, res) => {
+  try {
+    const products = await productModel
+      .find({})
+      .populate("category")
+      .select("-photo")
+      .limit(12)
+      .sort({ createdAt: -1 });
+    res.status(200).send({
+      success: true,
+      total_count: products.length,
+      message: "All Products",
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Cannot Get Products",
+      error,
+    });
+  }
+};
+
+export const getSingleProductsController = async (req, res) => {
+  try {
+    const product = await productModel
+      .findOne({ slug: req.params.slug })
+      .select("-photo")
+      .populate("category");
+    res.status(200).send({
+      success: true,
+      message: "Product Found",
+      product,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Cannot find product",
+      error,
+    });
+  }
+};
+
+export const productPhotoController = async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.pid).select("photo");
+    if (product.photo.data) {
+      res.set("Content-Type", product.photo.contentType);
+      return res.status(200).send(product.photo.data);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Cannot find Photo",
+      error,
+    });
+  }
+};
+
+export const deleteProductController = async (req, res) => {
+  try {
+    await productModel.findByIdAndDelete(req.params.id).select("-photo");
+    res.status(200).send({
+      success: true,
+      message: "Product Deleted Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Unable to Delete Product",
+      error,
+    });
+  }
+};
+
+export const updateProductController = async (req, res) => {
+  try {
+    const { name, slug, description, price, category, quantity, shipping } =
+      req.fields;
+    const { photo } = req.files;
+
+    switch (true) {
+      case !name:
+        return res.status(500).send({ error: "Name is Required" });
+      case !description:
+        return res.status(500).send({ error: "Description is Required" });
+      case !price:
+        return res.status(500).send({ error: "Price is Required" });
+      case !category:
+        return res.status(500).send({ error: "Category is Required" });
+      case !quantity:
+        return res.status(500).send({ error: "Quantity is Required" });
+      case photo && photo.size > 100000:
+        return res
+          .status(500)
+          .send({ error: "Photo is Required and should be less than 1 MB" });
+    }
+    const products = await productModel.findByIdAndUpdate(
+      req.params.pid,
+      {
+        ...req.fields,
+        slug: slugify(name),
+      },
+      { new: true }
+    );
+    if (photo) {
+      products.photo.data = fs.readFileSync(photo.path);
+      products.photo.contentType = photo.type;
+    }
+    await products.save();
+    res.status(201).send({
+      success: true,
+      message: "Product Updated Successfully",
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Cannot Update Product",
+      error,
+    });
+  }
+};
+
+export const productFiltersController = async (req, res) => {
+  try {
+    const { checked, radio } = req.body;
+    let args = {};
+    if (checked.length > 0) args.category = checked;
+    if (radio.length) args.price = { $gte: radio[0], $lte: radio[1] };
+    const products = await productModel.find(args);
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Unable to Filter",
+      error,
+    });
+  }
+};
+
+// product count
+export const productCountController = async (req, res) => {
+  try {
+    const total = await productModel.estimatedDocumentCount();
+    res.status(200).send({
+      success: true,
+      total,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      message: "Error in product count",
+      error,
+      success: false,
+    });
+  }
+};
+
+// product list base on page
+export const productListController = async (req, res) => {
+  try {
+    const perPage = 4;
+    const page = req.params.page ? req.params.page : 1;
+    const products = await productModel
+      .find({})
+      .select("-photo")
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .sort({ createdAt: -1 });
+    res.status(200).send({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      success: false,
+      message: "error in per page ctrl",
+      error,
+    });
+  }
+};
+
+export const productCategoryController = async (req, res) => {
+  try {
+    const category = await categoryModel.findOne({ slug: req.params.slug });
+    const products = await productModel.find({ category }).populate("category");
+    res.status(200).send({
+      success: true,
+      category,
+      products,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error in Getting Products",
+      error,
+    });
+  }
+};
+
+
+File Location: ./helpers/authHelper.js
+import bcrypt from "bcrypt";
+
+export const hashPassword = async (password) => {
+  try {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const comparePassword = async (password, hashedPassword) => {
+  return bcrypt.compare(password, hashedPassword);
+};
+
+
+File Location: ./middlewares/authMiddleware.js
+import JWT from "jsonwebtoken";
+import userModel from "../models/userModel.js";
+
+export const requireSignIn = async (req, res, next) => {
+  try {
+    const decode = JWT.verify(
+      req.headers.authorization,
+      process.env.JWT_SECRET
+    );
+    req.user = decode;
+    next();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const testController = (req, res) => {
+  try {
+    console.log("Protected Route");
+  } catch (error) {
+    console.log(error);
+    res.send({ error });
+  }
+};
+
+export const isAdmin = async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.user._id);
+    if (user.role !== 1) {
+      return res.status(401).send({
+        success: false,
+        message: "You are not authorized to access this page",
+      });
+    } else {
+      next();
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).send({
+      success: false,
+      message: "Error in Admin Middleware",
+      error,
+    });
+  }
+};
+
+
+File Location: ./models/categoryModel.js
+import mongoose from "mongoose";
+
+const categorySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  slug: {
+    type: String,
+    lowercase: true,
+  },
+});
+
+export default mongoose.model("Category", categorySchema);
+
+
+File Location: ./models/productModel.js
+import mongoose from "mongoose";
+
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    slug: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    category: {
+      type: mongoose.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    photo: {
+      data: Buffer,
+      contentType: String,
+    },
+    shipping: {
+      type: Boolean,
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Products", productSchema);
+
+
+File Location: ./models/userModel.js
+import mongoose from "mongoose";
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    email: {
+      type: String,
+      requried: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    answer: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
+export default mongoose.model("users", userSchema);
+
+
+File Location: ./routes/authRoute.js
+import express from "express";
+import {
+  forgotPasswordController,
+  loginController,
+  registerController,
+} from "../controllers/authController.js";
+import {
+  isAdmin,
+  requireSignIn,
+  testController,
+} from "../middlewares/authMiddleware.js";
+
+const router = express.Router();
+
+router.post("/register", registerController);
+
+router.post("/login", loginController);
+
+router.post("/forgot-password", forgotPasswordController);
+
+router.get("/test", requireSignIn, isAdmin, testController);
+
+router.get("/user-auth", requireSignIn, (req, res) => {
+  res.status(200).send({ ok: true });
+});
+
+router.get("/admin-auth", requireSignIn, isAdmin, (req, res) => {
+  res.status(200).send({ ok: true });
+});
+
+export default router;
+
+
+File Location: ./routes/categoryRoutes.js
+import express from "express";
+import { requireSignIn, isAdmin } from "../middlewares/authMiddleware.js";
+import {
+  categoryController,
+  createCategoryController,
+  deleteCategoryController,
+  singleCategoryController,
+  updateCategoryController,
+} from "../controllers/categoryController.js";
+
+const router = express.Router();
+
+router.post(
+  "/create-category",
+  requireSignIn,
+  isAdmin,
+  createCategoryController
+);
+
+router.put(
+  "/update-category/:id",
+  requireSignIn,
+  isAdmin,
+  updateCategoryController
+);
+
+router.get("/get-category", categoryController);
+
+router.get("/single-category/:slug", singleCategoryController);
+
+router.delete(
+  "/delete-category/:id",
+  requireSignIn,
+  isAdmin,
+  deleteCategoryController
+);
+
+export default router;
+
+
+File Location: ./routes/productRoutes.js
+import express from "express";
+import { requireSignIn, isAdmin } from "../middlewares/authMiddleware.js";
+import {
+  createProductController,
+  deleteProductController,
+  getProductsController,
+  getSingleProductsController,
+  productCategoryController,
+  productCountController,
+  productFiltersController,
+  productListController,
+  productPhotoController,
+  updateProductController,
+} from "../controllers/productController.js";
+import formidable from "express-formidable";
+
+const router = express.Router();
+
+router.post(
+  "/create-product",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  createProductController
+);
+
+router.get("/get-products", getProductsController);
+
+router.get("/get-product/:slug", getSingleProductsController);
+
+router.get("/product-photo/:pid", productPhotoController);
+
+router.put(
+  "/update-product/:pid",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  updateProductController
+);
+
+router.delete(
+  "/delete-product/:id",
+  requireSignIn,
+  isAdmin,
+  deleteProductController
+);
+
+router.post("/product-filters", productFiltersController);
+
+router.get("/product-count", productCountController);
+
+router.get("/product-list/:page", productListController);
+
+router.get("/product-category/:slug", productCategoryController);
+
+export default router;
+
+
+File Location: ./.env
+PORT = 8080
+
+MONGO_URL = mongodb://localhost:27017/ecommerce
+
+JWT_SECRET = asdf1234ghjk5678zxcv9876
+
+
+File Location: ./package.json
+{
+  "name": "mern-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix ./client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [],
+  "author": "Abhishek Paul - Freelance IT Trainer",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "colors": "^1.4.0",
+    "concurrently": "^9.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-formidable": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.1",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.10",
+    "slugify": "^1.6.6"
+  }
+}
